@@ -1,0 +1,6 @@
+{
+  "taskdb": "mysql+taskdb://root:password@localhost:3306/taskdb",
+  "projectdb": "mysql+projectdb://root:password@localhost:3306/projectdb",
+  "resultdb": "mysql+resultdb://root:password@localhost:3306/resultdb",
+  "webui": {}
+}

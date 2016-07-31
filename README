@@ -1,0 +1,8 @@
+Experimental Data Tools
+=======================
+
+1. sudo apt install -y libmysqlclient-dev python-dev libmysqld-dev
+
+2. sudo pip install -r requirements.txt
+
+3. Install mysql-connector-python, http://dev.mysql.com/downloads/connector/python/
