@@ -5,8 +5,8 @@
 import sys
 
 from pyspider.libs.base_handler import *
-from pyspider.libs.awesome import MyDB
-from pyspider.libs.awesome.config import GITHUB_OAUTH_CLIENT_ID, GITHUB_OAUTH_CLIENT_SCR
+from pyspider.libs.psdkit import MyDB
+from pyspider.libs.psdkit.config import GITHUB_OAUTH_CLIENT_ID, GITHUB_OAUTH_CLIENT_SCR
 
 reload(sys)
 sys.setdefaultencoding('utf8')

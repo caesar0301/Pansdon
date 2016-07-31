@@ -4,7 +4,7 @@ set -e
 
 PYTHON_PATH=/usr/local/lib/python2.7/dist-packages/pyspider/libs/
 
-if [[! -d $PYTHON_PATH ]]; then
+if [[ ! -d $PYTHON_PATH ]]; then
     mkdir $PYTHON_PATH
 fi
 
