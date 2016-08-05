@@ -15,27 +15,27 @@ MAX_PAGE = 3427
 
 
 class MDBUtils(object):
-	""" Utility to elimitate the burden of interacting with mysql database
-	"""
-	def __init__(self, database, host='localhost', user='root', password='password'):
-		self.con = mdb.connect(host, user, password, database)
-		self.con.set_character_set('utf8')
-		self.cur = self.con.cursor()
-		self.cur.execute('SET NAMES utf8;')
-		self.cur.execute('SET CHARACTER SET utf8;')
-		self.cur.execute('SET character_set_connection=utf8;')
+    """ Utility to elimitate the burden of interacting with mysql database
+    """
+    def __init__(self, database, host='localhost', user='root', password='password'):
+        self.con = mdb.connect(host, user, password, database)
+        self.con.set_character_set('utf8')
+        self.cur = self.con.cursor()
+        self.cur.execute('SET NAMES utf8;')
+        self.cur.execute('SET CHARACTER SET utf8;')
+        self.cur.execute('SET character_set_connection=utf8;')
 
-	def __del__(self):
-		self.con.commit()
-		self.cur.close()
-		self.con.close()
+    def __del__(self):
+        self.con.commit()
+        self.cur.close()
+        self.con.close()
 
-	def execute(self, sql_cmd, n=None):
-		self.cur.execute(sql_cmd)
-		self.con.commit()
-		if n is None:
-			return self.cur.fetchall()
-		return self.cur.fetchmany(n)
+    def execute(self, sql_cmd, n=None):
+        self.cur.execute(sql_cmd)
+        self.con.commit()
+        if n is None:
+            return self.cur.fetchall()
+        return self.cur.fetchmany(n)
 
 db_handler = MDBUtils(DBNAME)
 

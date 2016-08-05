@@ -32,8 +32,8 @@ class MDBUtils(object):
 
 
 def prettify(code):
-	code2 = re.sub(r"\t", "	", code)
-	return re.sub(r"	", "\t", code2)
+	code2 = re.sub(r"\t", "    ", code)
+	return code2
 
 
 def get_spiders():
