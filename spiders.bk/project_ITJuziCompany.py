@@ -6,36 +6,12 @@
 from pyspider.libs.base_handler import *
 from bs4 import BeautifulSoup
 import re
-import MySQLdb as mdb
+from psdkit.utils import *
 
 MASTER_URL = 'http://www.itjuzi.com/company'
 DBNAME="ITJuzi"
 TABLENAME="company"
 MAX_PAGE = 3427
-
-
-class MDBUtils(object):
-    """ Utility to elimitate the burden of interacting with mysql database
-    """
-    def __init__(self, database, host='localhost', user='root', password='password'):
-        self.con = mdb.connect(host, user, password, database)
-        self.con.set_character_set('utf8')
-        self.cur = self.con.cursor()
-        self.cur.execute('SET NAMES utf8;')
-        self.cur.execute('SET CHARACTER SET utf8;')
-        self.cur.execute('SET character_set_connection=utf8;')
-
-    def __del__(self):
-        self.con.commit()
-        self.cur.close()
-        self.con.close()
-
-    def execute(self, sql_cmd, n=None):
-        self.cur.execute(sql_cmd)
-        self.con.commit()
-        if n is None:
-            return self.cur.fetchall()
-        return self.cur.fetchmany(n)
 
 db_handler = MDBUtils(DBNAME)
 
@@ -57,7 +33,7 @@ class Handler(BaseHandler):
     
     @config(age=3 * 24 * 60 * 60)
     def on_start(self):
-        for i in range(1, MAX_PAGE):
+        for i in range(1, MAX_PAGE + 1):
             self.crawl("%s?page=%d" % (MASTER_URL, i), callback=self.index_company)
             
     def extract_id(self, page):
@@ -111,14 +87,19 @@ class Handler(BaseHandler):
             return
         
         for r in companies:
-            print(r)     
-            command = """insert into %s.%s (id,title,description,tag,local,round,birth,page,pic) VALUES """ % (DBNAME, TABLENAME) + \
-"""(%d,"%s","%s","%s","%s","%s","%s","%s","%s") """ % (r['id'], r['title'], r['description'], r['tag'], r['local'], r['round'], r['birth'], r['page'], r['pic']) + \
-"""on duplicate key update round = "%s";""" % (r['round'])
+            print(r)
+            command = assemble_insert_cmd(r, DBNAME+"."+TABLENAME, {
+            'id': 'id',
+            'title': 'title',
+            'description': 'description',
+            'tag': 'tag',
+            'local': 'local',
+            'round': 'round',
+            'birth': 'birth',
+            'page': 'page',
+            'pic': 'pic'
+            })
+
             print(command)
-    
-            try:
-                db_handler.execute(command)
-            except Exception, e:
-                print(e)
+            db_handler.execute(command)
 

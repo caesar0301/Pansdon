@@ -1,0 +1,12 @@
+#!/bin/bash
+# Install pds toolkit to local python repo
+set -e
+
+THISPATH=$(cd ${0%/*} && echo $PWD/${0##*/})
+PROJHOME=`dirname $THISPATH`/..
+
+cd $PROJHOME/psdkit
+python setup.py install
+cd -
+
+exit 0;

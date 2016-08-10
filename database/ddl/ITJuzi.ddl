@@ -31,3 +31,19 @@ create table if not exists entrepreneur (
     exp_edu varchar(1024),
     updated TIMESTAMP
 );
+
+
+-- Invest events
+create table if not exists invests (
+    id BIGINT NOT NULL PRIMARY KEY,
+    name varchar(64),
+    location varchar(256),
+    tags varchar(256),
+    time varchar(64),
+    round varchar(64),
+    financing varchar(64),
+    investors varchar(512),
+    updated TIMESTAMP
+);
+
+alter table invests add type TINYINT;

@@ -7,37 +7,13 @@ import re
 from pyspider.libs.base_handler import *
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-import MySQLdb as mdb
+from psdkit.utils import *
 
 
 MASTER_URL = 'http://www.itjuzi.com/person'
 DBNAME="ITJuzi"
 TABLENAME="entrepreneur"
 MAX_PAGE = 1699
-
-
-class MDBUtils(object):
-    """ Utility to elimitate the burden of interacting with mysql database
-    """
-    def __init__(self, database, host='localhost', user='root', password='password'):
-        self.con = mdb.connect(host, user, password, database)
-        self.con.set_character_set('utf8')
-        self.cur = self.con.cursor()
-        self.cur.execute('SET NAMES utf8;')
-        self.cur.execute('SET CHARACTER SET utf8;')
-        self.cur.execute('SET character_set_connection=utf8;')
-
-    def __del__(self):
-        self.con.commit()
-        self.cur.close()
-        self.con.close()
-
-    def execute(self, sql_cmd, n=None):
-        self.cur.execute(sql_cmd)
-        self.con.commit()
-        if n is None:
-            return self.cur.fetchall()
-        return self.cur.fetchmany(n)
 
 db_handler = MDBUtils(DBNAME)
 
@@ -51,37 +27,6 @@ def extract_person_id(page):
     match = re.search(r"(?<=person/)\d+", page)
     return int(match.group(0)) if match else -1
 
-
-def append_str(origin, newstr, sep='|'):
-    strings = [origin, newstr]
-    return sep.join([ i for i in strings if len(i) > 0])
-
-
-def assemble_insert_cmd(result, table_name, column_map):
-    # Omit columns that are not in result
-    items = [i for i in column_map.items() if i[0] in result]
-    
-    # Assemble column name tuple
-    columns = [str(i[1]) for i in items]
-    columns_str = '(' + ','.join(columns) + ')'
-
-    # Assemble values tuple
-    values = []
-    for rkey, col in items:
-        if isinstance(result[rkey], str) or isinstance(result[rkey], unicode):
-            values.append('"%s"' % result[rkey])
-        else:
-            values.append(str(result[rkey]))
-    values_str = '(' + ','.join(values) + ')'
-
-    # Assemble update assignment string, e.g., a=v1,b=v2
-    updates = [''.join(list(i)) for i in zip(columns, list("=") * len(values), values)]
-    update_str = ','.join(updates)
-
-    command = "INSERT INTO %s %s VALUES %s ON DUPLICATE KEY UPDATE %s;" % \
-        (table_name, columns_str, values_str, update_str)
-    return command
-    
 
 class Handler(BaseHandler):
     ## Act as a browser
@@ -113,7 +58,7 @@ class Handler(BaseHandler):
                 name = li.find(class_ = 'name')
                 if name:
                     pid = extract_person_id(name['href'])
-                    self.crawl(name['href'], callback=self.index_person, save={'id': pid})
+                    self.crawl(name['href'], callback=self.index_person)
 
                     
     @config(age=3 * 24 * 3600, priority=10)
@@ -170,7 +115,6 @@ class Handler(BaseHandler):
                             c = sibling.text.strip('\r\n\t ')
                         intro = append_str(intro, c)
                     person_info['intro'] = intro
-                    print(intro)
                     
                 if sec_title == u'创业经历':
                     person_info['exp_startup'] = ''
@@ -184,7 +128,6 @@ class Handler(BaseHandler):
                             c = sibling.text.strip('\r\n\t ')
                         intro = append_str(intro, c)
                     person_info['exp_work'] = intro
-                    print(intro)
                     
                 if sec_title == u'教育经历':
                     intro = []
@@ -203,7 +146,6 @@ class Handler(BaseHandler):
                             cinfo = append_str(cinfo, c)
                         intro.append(cinfo)
                     person_info['exp_edu'] = '\n'.join(intro)
-                    print(person_info['exp_edu'])
                     
         return person_info
     
@@ -221,9 +163,7 @@ class Handler(BaseHandler):
         'exp_work': 'exp_work',
         'exp_edu': 'exp_edu'
         })
+        
         print(command)
+        db_handler.execute(command)
 
-        try:
-            db_handler.execute(command)
-        except Exception, e:
-            print(e)

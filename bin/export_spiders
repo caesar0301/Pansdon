@@ -5,7 +5,9 @@
 # Email: chenxm35@gmail.com
 ##
 import MySQLdb as mdb
-import re
+import re, sys
+from inspect import getsourcefile
+from os.path import abspath, dirname, join
 
 class MDBUtils(object):
 	""" Utility to elimitate the burden of interacting with mysql database
@@ -36,17 +38,18 @@ def prettify(code):
 	return code2
 
 
-def get_spiders():
+def get_spiders(saved_path):
 	db_instance = MDBUtils("projectdb")
 	res = db_instance.execute("select * from projectdb;")
 	for project in res:
 		name = project[0]
 		code = project[3]
 		
-		with open("project_%s.py" % name, 'wb') as of:
+		with open(join(saved_path, "project_%s.py" % name), 'wb') as of:
 			of.write(prettify(code))
 			of.close()
 
 
 if __name__ == '__main__':
-	get_spiders()
+	thishome = dirname(abspath(getsourcefile(lambda:0)))
+	get_spiders("%s/../spiders.bk/" % thishome)
