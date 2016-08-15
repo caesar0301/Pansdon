@@ -8,6 +8,7 @@ from pyspider.libs.base_handler import *
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from psdkit.utils import *
+from psdkit import ITJuzi
 
 
 MASTER_URL = 'http://www.itjuzi.com/person'
@@ -36,7 +37,7 @@ class Handler(BaseHandler):
         "Accept-Language": "en-US,zh-CN;q=0.8,zh;q=0.5,en;q=0.3",
         "Cache-Control": "max-age=0",
         "Connection": "keep-alive",
-        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0"
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36"
     }
 
     crawl_config = {
@@ -44,9 +45,15 @@ class Handler(BaseHandler):
         "timeout" : 100
     }
     
-    @config(age=3 * 24 * 3600)
+    @config(age=24 * 3600)
     def on_start(self):
-        for i in range(1, MAX_PAGE + 1):
+        self.crawl(MASTER_URL, callback=self.parse_pn)
+
+        
+    def parse_pn(self, response):
+        soup = BeautifulSoup(response.text, "html5lib")
+        PAGES = max(MAX_PAGE, ITJuzi.extract_max_page(soup))
+        for i in range(1, PAGES + 1):
             self.crawl("%s?page=%d" % (MASTER_URL, i), callback=self.index_page)
 
             

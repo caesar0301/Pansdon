@@ -43,7 +43,21 @@ create table if not exists invests (
     round varchar(64),
     financing varchar(64),
     investors varchar(512),
+    type TINYINT,
     updated TIMESTAMP
 );
 
-alter table invests add type TINYINT;
+
+-- Mergers
+create table if not exists mergers (
+    id BIGINT NOT NULL PRIMARY KEY,
+    name varchar(64),
+    location varchar(256),
+    tags varchar(256),
+    time varchar(64),
+    stock varchar(64),
+    financing varchar(64),
+    merger varchar(256),
+    type TINYINT,
+    updated TIMESTAMP
+);
