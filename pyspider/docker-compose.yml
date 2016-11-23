@@ -1,0 +1,39 @@
+phantomjs:
+  image: binux/pyspider:latest
+  command: phantomjs
+result:
+  image: binux/pyspider:latest
+  external_links:
+    - mysql
+    - rabbitmq
+  command: result_worker
+processor:
+  image: binux/pyspider:latest
+  external_links:
+    - mysql
+    - rabbitmq
+  command: processor
+fetcher:
+  image: binux/pyspider:latest
+  external_links:
+    - rabbitmq
+  links:
+    - phantomjs
+  command : fetcher
+scheduler:
+  image: binux/pyspider:latest
+  external_links:
+    - mysql
+    - rabbitmq
+  command: scheduler
+webui:
+  image: binux/pyspider:latest
+  external_links:
+    - mysql
+    - rabbitmq
+  links:
+    - scheduler
+    - phantomjs
+  command: webui
+  ports:
+    - "5000:5000"

@@ -1,5 +1,0 @@
-#!/bin/bash
-THISHOME=`dirname $0`
-PROJHOME=$THISHOME/..
-
-$(which pyspider) -c $PROJHOME/pyspider-config.json
