@@ -3,7 +3,7 @@
 set -e
 
 THISPATH=$(cd ${0%/*} && echo $PWD/${0##*/})
-PROJHOME=`dirname $THISPATH`/..
+PROJHOME=`dirname $THISPATH`
 
 cd $PROJHOME/psdkit
 python setup.py install

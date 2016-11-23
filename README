@@ -6,3 +6,5 @@ Experimental Data Tools
 2. sudo pip install -r requirements.txt
 
 3. Install mysql-connector-python, http://dev.mysql.com/downloads/connector/python/
+
+4. ./install_tookit
